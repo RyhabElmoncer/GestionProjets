@@ -1,0 +1,338 @@
+<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+    <!-- Header -->
+    <div
+            class="bg-card flex flex-0 flex-col border-b p-6 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
+    >
+        <div class="min-w-0 flex-1">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500"
+                    >{{ t('leases') }}</a
+                    >
+                </div>
+                <div class="ml-1 flex items-center whitespace-nowrap">
+                    <mat-icon
+                            class="text-secondary icon-size-5"
+                            [svgIcon]="'heroicons_mini:chevron-right'"
+                    ></mat-icon>
+                    <a class="ml-1 text-primary-500"> {{ t('Add a new Bail') }}</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2
+                        class="truncate text-3xl font-extrabold leading-7 tracking-tight sm:leading-10 md:text-4xl"
+                >
+                    {{ t('Add a new bail') }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <form
+                class="bg-card overflow-hidden rounded p-4 shadow"
+                [formGroup]="bailStepperForm"
+        >
+            <mat-horizontal-stepper [linear]="true" (selectionChange)="onStepperSelectionChange($event)">
+                <mat-step [formGroupName]="'step1'" [stepControl]="bailStepperForm.get('step1')" >
+                    <ng-template matStepLabel>Renseignements personnels</ng-template>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Locataire -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Locataire <span class="text-red-500">*</span>
+                            </label>
+                            <ng-select id="locataire"
+                                       [items]="allLocataires"
+                                       bindLabel="fullname"
+                                       bindValue="id"
+                                       [multiple]="true"
+                                       name="Locataire"
+                                       formControlName="Locataires"
+                                       placeholder="Sélectionnez des locataires"
+                                       [clearable]="true"
+                                       class="w-full border border-gray-300 rounded-md shadow-sm">
+                            </ng-select>
+
+                        </div>
+
+                        <mat-form-field class="w-full">
+                            <mat-label>Immeuble *</mat-label>
+                            <mat-select formControlName="immeubleId" required (selectionChange)="onImmeubleSelected($event)">
+                                <mat-option *ngFor="let immeuble of propertysNamess$ | async" [value]="immeuble.propertyId">
+                                    {{ immeuble.propertyName }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <!-- Sélection des unités associées -->
+                        <mat-form-field class="w-full">
+                            <mat-label>Unités *</mat-label>
+                            <mat-select formControlName="uniteId" required (selectionChange)="onUnitSelected($event)">
+                                <mat-option *ngFor="let unite of unites$  | async" [value]="unite.id">
+                                    {{ unite.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+<!--                        <mat-form-field class="w-full">-->
+<!--                            <mat-label>Unités *</mat-label>-->
+<!--                            <mat-select formControlName="uniteId" required>-->
+<!--                                <mat-option *ngFor="let unite of unites$ | async" [value]="unite.id">-->
+<!--                                    {{ unite.name }}-->
+<!--                                </mat-option>-->
+<!--&lt;!&ndash;                            </mat-select>&ndash;&gt;-->
+<!--                        </mat-form-field>-->
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mt-4">
+                        <!-- Date de début -->
+                        <mat-form-field class="w-full">
+                            <mat-label>De *</mat-label>
+                            <input matInput [matDatepicker]="pickerDe" formControlName="dateDebut" required>
+                            <mat-datepicker-toggle matSuffix [for]="pickerDe"></mat-datepicker-toggle>
+                            <mat-datepicker #pickerDe></mat-datepicker>
+                        </mat-form-field>
+
+                        <!-- Terme (jours) -->
+                        <mat-form-field class="w-full">
+                            <mat-label>Terme (jours)</mat-label>
+                            <input matInput type="number" formControlName="terme">
+                        </mat-form-field>
+
+                        <!-- Date de fin -->
+                        <mat-form-field class="w-full">
+                            <mat-label>À *</mat-label>
+                            <input matInput [matDatepicker]="pickerA" formControlName="dateFin" required>
+                            <mat-datepicker-toggle matSuffix [for]="pickerA"></mat-datepicker-toggle>
+                            <mat-datepicker #pickerA></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <!-- Notification de renouvellement -->
+                        <mat-form-field class="w-full">
+                            <mat-label>Notification de renouvellement (jours)</mat-label>
+                            <input matInput type="number" formControlName="notificationRenouvellement">
+                        </mat-form-field>
+
+                        <!-- Logement résidentiel -->
+                        <div class="flex items-center">
+                            <mat-slide-toggle formControlName="residenceSeule">
+                                Le logement est loué à des fins résidentielles seulement.
+                            </mat-slide-toggle>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end mt-6">
+                        <button mat-flat-button color="primary"
+                                [disabled]="bailStepperForm.get('step1').invalid"
+                                matStepperNext>
+                            Suivant
+                        </button>
+                    </div>
+                </mat-step>
+
+                <mat-step
+                        [formGroupName]="'step2'"
+                        [stepControl]="bailStepperForm.get('step2')"
+                        #propertyStepperStep2
+                >
+                    <ng-template matStepLabel>{{ t('Paiement') }}</ng-template>
+
+                    <div class="mt-6 flex flex-col gap-6">
+                        <!-- 🏠 Groupe 1 : Loyer & Coût du Service -->
+                        <div class="flex gap-4 items-center">
+                            <!-- Champ Loyer -->
+                            <mat-form-field class="flex-1">
+                                <input matInput [formControlName]="'loyer'" [placeholder]="t('Loyer')" required />
+                            </mat-form-field>
+
+                            <!-- Champ Coût total du service -->
+                            <mat-form-field class="flex-1">
+                                <input matInput [formControlName]="'coutTotalService'" [placeholder]="t('Coût total du service')" required />
+                            </mat-form-field>
+
+                            <!-- Période de paiement avec switchs -->
+                            <div class="flex gap-2 items-center">
+                                <span>{{ t('Par mois') }}</span>
+                                <mat-slide-toggle
+                                        [checked]="bailStepperForm.get('step2.periodePaiement')?.value === 'mois'"
+                                        (change)="bailStepperForm.get('step2.periodePaiement')?.setValue('mois')"
+                                ></mat-slide-toggle>
+
+                                <span>{{ t('Par semaine') }}</span>
+                                <mat-slide-toggle
+                                        [checked]="bailStepperForm.get('step2.periodePaiement')?.value === 'semaine'"
+                                        (change)="bailStepperForm.get('step2.periodePaiement')?.setValue('semaine')"
+                                ></mat-slide-toggle>
+                            </div>
+                        </div>
+
+
+                        <div class="flex gap-4 flex-wrap items-center">
+                            <mat-form-field class="flex-1">
+                                <input matInput [formControlName]="'premiereDatePaiement'" [matDatepicker]="picker" [placeholder]="t('Première date de paiement')" required />
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                            <mat-form-field class="flex-1">
+                                <mat-select [formControlName]="'Mois'" [placeholder]="t('Periode de paiement')" required>
+                                    <mat-option value="Mois">{{ t('Chèque') }}</mat-option>
+                                    <mat-option value="Somaine">{{ t('Somaine') }}</mat-option>
+                                    <mat-option value="Autre">{{ t('Autre') }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                        </div>
+
+                        <div class="flex gap-4 flex-wrap">
+                            <mat-form-field class="flex-1">
+                                <mat-select [formControlName]="'methodePaiement'" [placeholder]="t('Méthode de paiement')" required>
+                                    <mat-option value="cheque">{{ t('Chèque') }}</mat-option>
+                                    <mat-option value="virement">{{ t('Virement bancaire') }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field class="flex-1">
+                                <input
+                                        matInput
+                                        [formControlName]="'lieuPaiement'"
+                                        ngx-gp-autocomplete
+                                        (onAddressChange)="handleAddressChange($event)"
+                                        [placeholder]="t('Lieu de paiement')"
+                                        required
+                                />
+                            </mat-form-field>
+
+
+                        </div>
+
+                        <div class="flex flex-col gap-4">
+                            <!-- Toggle "Le locataire est bénéficiaire d'une subvention" -->
+                            <mat-slide-toggle formControlName="subventionLoyer">
+                                {{ t("Le locataire est bénéficiaire d'un programme de subvention au loyer.") }}
+                            </mat-slide-toggle>
+
+                            <!-- Champ "Spécifier" affiché uniquement si la subvention est activée -->
+                            <mat-form-field *ngIf="bailStepperForm.get('step2.subventionLoyer')?.value">
+                                <input matInput [formControlName]="'specificationSubvention'" [placeholder]="t('Spécifier')" />
+                            </mat-form-field>
+
+                            <!-- Toggle "Postdated Cheques" -->
+                            <mat-slide-toggle formControlName="chequesPostdates">
+                                {{ t("The lessee agrees to give the lessor postdated cheques for the term of the lease.") }}
+                            </mat-slide-toggle>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end mt-6">
+                        <button class="mr-2 px-8" mat-flat-button [color]="'accent'" type="button" matStepperPrevious>
+                            {{ t('Retour') }}
+                        </button>
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                [disabled]="propertyStepperStep2.stepControl.invalid"
+                                type="button"
+                                matStepperNext
+                        >
+                            {{ t('Suivant') }}
+                        </button>
+                    </div>
+                </mat-step>
+
+                <mat-step
+                        [formGroupName]="'step3'"
+                        [stepControl]="bailStepperForm.get('step3')"
+
+                >
+                    <ng-template matStepLabel>{{ t('Services') }}</ng-template>
+                    <div *ngFor="let service of servicesNames$ | async">
+                        <mat-checkbox
+                                [checked]="this.selectedServices?.value.includes(service.id)"
+                                (change)="onServiceChange(service.id, $event.checked)"
+                                class="flex items-center cursor-pointer hover:bg-gray-100"
+                        >
+                            {{ service.name }}
+                        </mat-checkbox>
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button
+                                class="mr-2 px-8"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                        >
+                            Back
+                        </button>
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                type="button"
+                                matStepperNext
+                        >
+                            Next
+                        </button>
+                    </div>
+                </mat-step>
+
+
+                <mat-step [formGroupName]="'step4'" [stepControl]="bailStepperForm.get('step4')" #unitStepperStep4>
+                    <ng-template matStepLabel>{{ t('features') }}</ng-template>
+                    <div *ngFor="let inclusion of inclusions$ | async">
+                        <mat-checkbox
+                                [checked]="isInclusionSelected(inclusion.id)"
+                                (change)="onInclusionChange(inclusion.id, $event.checked)"
+                                class="flex items-center cursor-pointer hover:bg-gray-100">
+                            {{ inclusion.qty }} - {{ inclusion.other }}
+                        </mat-checkbox>
+                        <!-- Afficher les champs qty et other si l'inclusion est sélectionnée -->
+                        <div *ngIf="isInclusionSelected(inclusion.id)">
+                            <div formArrayName="selectedInclusions">
+                                <div *ngFor="let inclusionControl of selectedInclusions.controls; let i = index">
+                                    <div [formGroupName]="i">
+                                        <mat-form-field class="gt-xs:pl-3 flex-auto">
+                                            <input *ngIf="inclusionControl.get('inclusionId').value === inclusion.id" matInput formControlName="qty" type="number" placeholder="Quantité">
+                                        </mat-form-field>
+                                        <mat-form-field class="ml-3 gt-xs:pl-3 flex-auto">
+                                            <input *ngIf="inclusionControl.get('inclusionId').value === inclusion.id" matInput formControlName="other" type="text" placeholder="Informations supplémentaires">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button
+                                class="mr-2 px-8"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                        >
+                            Back
+                        </button>
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                type="button"
+                                matStepperNext
+                                (click)="createBail()"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </mat-step>
+            </mat-horizontal-stepper>
+        </form>
+
+    </div>
+</div>

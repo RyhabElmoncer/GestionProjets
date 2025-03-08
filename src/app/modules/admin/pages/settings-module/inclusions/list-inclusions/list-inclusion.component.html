@@ -1,0 +1,146 @@
+@if (isAdmin || isSubadmin || isOwner ) {
+    <div
+            class="bg-card flex min-w-0 flex-auto flex-col dark:bg-transparent sm:absolute sm:inset-0 sm:overflow-hidden" *transloco="let t"
+    >
+        <!-- Header -->
+        <div
+                class="relative flex flex-0 flex-col border-b px-6 py-8 sm:flex-row sm:items-center sm:justify-between md:px-8"
+        >
+            <!-- Loader -->
+            @if (isLoading) {
+                <div class="absolute inset-x-0 bottom-0">
+                    <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+                </div>
+            }
+            <!-- Title -->
+            <div class="text-4xl font-extrabold tracking-tight">{{t('list of features')}} </div>
+            <!-- Actions -->
+            <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
+                <!-- Search -->
+                <mat-form-field
+                        class="fuse-mat-dense fuse-mat-rounded min-w-64"
+                        [subscriptSizing]="'dynamic'"
+                >
+                    <mat-icon
+                            class="icon-size-5"
+                            matPrefix
+                            [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    ></mat-icon>
+                    <input
+                            matInput
+                            [formControl]="searchInputControl"
+                            [autocomplete]="'off'"
+                            [placeholder]="'Search products'"
+                    />
+                </mat-form-field>
+                <!-- Add product button -->
+                @if (isWrite) {
+                    <button
+                            class="ml-4"
+                            mat-flat-button
+                            [color]="'primary'"
+                            (click)="addNewInclusion()"
+                    >
+                        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span class="ml-2 mr-1">{{t('action.add')}}</span>
+                    </button>
+                }
+
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex flex-auto overflow-hidden">
+            <!-- Products list -->
+            <div
+                    class="flex flex-auto flex-col overflow-hidden sm:mb-18 sm:overflow-y-auto"
+            >
+                @if (inclusions$ | async; as inclusions) {
+                    @if (inclusions.length > 0) {
+                        <div class="grid">
+                            <!-- Header -->
+                            <div
+                                    class="inventory-grid text-secondary sticky top-0 z-10 grid gap-4 bg-gray-50 px-6 py-4 text-md font-semibold shadow dark:bg-black dark:bg-opacity-5 md:px-8"
+                                    matSort
+                                    matSortDisableClear
+                            >
+                                <div
+                                        class="hidden sm:block"
+                                        [mat-sort-header]="'sku'"
+                                >
+                                    {{t('Name') }}
+                                </div>
+                                <div
+                                        class="hidden sm:block"
+                                        [mat-sort-header]="'price'"
+                                >
+                                    {{t('Description') }}
+                                </div>
+
+                                <div class="hidden sm:block"  [mat-sort-header]="'action'"> {{t('action.actions') }}</div>
+                            </div>
+                            <!-- Rows -->
+                            @if (inclusions$| async; as inclusions) {
+                                @for (
+                                        inclusion of inclusions;
+                                    track trackByFn($index, inclusion)
+                                        ) {
+                                    <div
+                                            class="inventory-grid grid items-center gap-4 border-b px-6 py-3 md:px-8"
+                                    >
+                                        <!-- SKU -->
+                                        <div class="hidden sm:block">
+                                            {{ inclusion.name }}
+                                        </div>
+
+                                        <!-- SKU -->
+                                        <div class="hidden sm:block">
+                                            {{ inclusion.description }}
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="hidden sm:block">
+                                            @if (isUpdate) {
+                                                <button (click)="openEditDialog(inclusion)">
+                                                    <mat-icon
+                                                            class="text-green-400 icon-size-5 mr-2"
+                                                            [svgIcon]="
+                                                    'feather:edit-3'"
+                                                    ></mat-icon>
+                                                </button>
+                                            }
+                                            @if (isDelete) {
+                                                <button (click)="openConfirmationDialog(inclusion)">
+                                                    <mat-icon class="text-red-400 icon-size-5 mr-2" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                                </button>}
+
+
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <mat-paginator
+                                class="z-10 border-b bg-gray-50 dark:bg-transparent sm:absolute sm:inset-x-0 sm:bottom-0 sm:border-b-0 sm:border-t"
+                                [ngClass]="{ 'pointer-events-none': isLoading }"
+                                [length]="pagination?.length"
+                                [pageIndex]="pagination?.page"
+                                [pageSize]="pagination?.size"
+                                [pageSizeOptions]="[5, 10, 25, 100]"
+                                [showFirstLastButtons]="true"
+                                (page)="onPageChange($event)"
+                        ></mat-paginator>
+                    } @else {
+                        <div
+                                class="border-t p-8 text-center text-4xl font-semibold tracking-tight sm:p-16"
+                        >
+                            There are no products!
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+}
+

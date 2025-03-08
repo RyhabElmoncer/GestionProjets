@@ -1,0 +1,10 @@
+/* ----------------------------------------------------------------------------------------------------- */
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+
+/* Importing Bootstrap SCSS file. */
+@use 'bootstrap/scss/bootstrap' as *;
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Inter var , "Helvetica Neue", sans-serif; }

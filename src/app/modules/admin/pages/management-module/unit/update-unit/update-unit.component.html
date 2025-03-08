@@ -1,0 +1,338 @@
+<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+    <!-- Header -->
+    <div
+            class="bg-card flex flex-0 flex-col border-b p-6 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
+    >
+        <div class="min-w-0 flex-1">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500"
+                    >{{ t('Units') }}</a
+                    >
+                </div>
+                <div class="ml-1 flex items-center whitespace-nowrap">
+                    <mat-icon
+                            class="text-secondary icon-size-5"
+                            [svgIcon]="'heroicons_mini:chevron-right'"
+                    ></mat-icon>
+                    <a class="ml-1 text-primary-500"> {{ t('Edit unit') }}</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2
+                        class="truncate text-3xl font-extrabold leading-7 tracking-tight sm:leading-10 md:text-4xl"
+                >
+                    {{ t('Edit unit') }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <form
+                class="bg-card overflow-hidden rounded p-4 shadow"
+                [formGroup]="unitStepperForm"
+        >
+            <mat-horizontal-stepper [linear]="true" #unitStepper>
+                <mat-step
+                        [formGroupName]="'step1'"
+                        [stepControl]="unitStepperForm.get('step1')"
+                        #unitStepperStep1
+                >
+                    <ng-template matStepLabel
+                    >{{ t('Informations') }}
+                    </ng-template
+                    >
+                    <div class="mt-6 flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-select [formControlName]="'propertyId'" [placeholder]="t('Property')" required>
+                                <mat-option *ngFor="let property of propertysNames$ | async"
+                                            [value]="property.propertyId">
+                                    {{ property.propertyName }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'number'"
+                                    [placeholder]="t('Number')"
+                                    required
+                            />
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'name'"
+                                    [placeholder]="t('Name')"
+                                    required
+                            />
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'unitType'"
+                                    [placeholder]="t('Unit type')"
+                                    required
+                            />
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <mat-select [formControlName]="'status'" [placeholder]="t('Type')" required>
+                                <mat-option *ngFor="let status of unitStatusList" [value]="status.key">
+                                    {{ status.value }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="ml-3 flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'bedrooms'"
+                                    [placeholder]="t('Number of bedrooms')"
+                                    required
+                            />
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'bathrooms'"
+                                    [placeholder]="t('Number of baths')"
+                                    required
+                            />
+                        </mat-form-field>
+                        <mat-checkbox formControlName="isHome">
+                            {{ t('Visibility') }}
+                        </mat-checkbox>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'size'"
+                                    [placeholder]="t('Size')"
+                                    required
+                            />
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <mat-select [formControlName]="'typeOfSize'" [placeholder]="t('Type')" required>
+                                <mat-option *ngFor="let option of typeOfSizeOptions" [value]="option.key">
+                                    {{ option.value }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <input
+                                    matInput
+                                    [formControlName]="'marketRent'"
+                                    [placeholder]="t('Market Rent')"
+                                    required
+                            />
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 flex-auto">
+                            <mat-select [formControlName]="'accessControl'" [placeholder]="t('Access control')" required>
+                                <mat-option *ngFor="let option of accessControlOptions" [value]="option.key">
+                                    {{ option.value }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="gt-xs:pl-3 flex-auto">
+                                <textarea
+                                        matInput
+                                        [formControlName]="'descriptionFr'"
+                                        [placeholder]="'DescriptionFR'"
+                                        [rows]="3"
+                                ></textarea>
+
+                        </mat-form-field>
+                        <mat-form-field class="ml-3 gt-xs:pl-3 flex-auto">
+                                <textarea
+                                        matInput
+                                        [formControlName]="'descriptionEn'"
+                                        [placeholder]="'DescriptionEN'"
+                                        [rows]="3"
+                                ></textarea>
+
+                        </mat-form-field>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                [disabled]="
+                                    unitStepperStep1.stepControl
+                                        .pristine ||
+                                    unitStepperStep1.stepControl.invalid
+                                "
+                                type="button"
+                                matStepperNext
+                        >
+                            Next
+                        </button>
+                    </div>
+                </mat-step>
+
+                <mat-step
+                        [formGroupName]="'step2'"
+                        [stepControl]="unitStepperForm.get('step2')"
+                        #unitStepperStep2
+                >
+                    <ng-template matStepLabel>{{ t('Media') }}</ng-template>
+                    <div class="mt-6 flex flex-col lg:flex-row gap-4">
+                        <!-- Zone de drag & drop pour l'image principale -->
+                        <div class="border-2 border-dashed border-gray-300 bg-gray-100 rounded-lg p-6 text-center cursor-pointer transition hover:border-gray-400 flex-1"
+                             (click)="defaultImageInput.click()">
+                            <input type="file" accept="image/*" #defaultImageInput class="hidden"
+                                   (change)="onFileSelected($event, 'defaultImage')"/>
+                            <div class="flex flex-col items-center">
+                                <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor"
+                                     stroke-width="2"
+                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <p class="text-gray-700 font-medium">
+                                    {{ selectedDefaultImage ? selectedDefaultImage.name : t('chooseFile') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Zone de drag & drop pour plusieurs images -->
+                        <div class="border-2 border-dashed border-gray-300 bg-gray-100 rounded-lg p-6 text-center cursor-pointer transition hover:border-gray-400 flex-1"
+                             (click)="multipleImagesInput.click()">
+                            <input type="file" accept="image/*" multiple #multipleImagesInput class="hidden"
+                                   (change)="onFileSelected($event, 'images')"/>
+                            <div class="flex flex-col items-center">
+                                <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor"
+                                     stroke-width="2"
+                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <p class="text-gray-700 font-medium">
+                                    {{ selectedImages.length ? selectedImages.length + ' ' + t('filesSelected') : t('chooseFiles') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button
+                                class="mr-2 px-8"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                        >
+                            Back
+                        </button>
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                type="button"
+                                matStepperNext
+                        >
+                            Next
+                        </button>
+                    </div>
+                </mat-step>
+
+                <mat-step
+                        [formGroupName]="'step3'"
+                        [stepControl]="unitStepperForm.get('step3')"
+                >
+                    <ng-template matStepLabel>{{ t('Services') }}</ng-template>
+                    <div *ngFor="let service of servicesNames$ | async">
+                        <mat-checkbox
+                                [checked]="selectedServices?.value.includes(service.id)"
+                                (change)="onServiceChange(service.id, $event.checked)"
+                                class="flex items-center cursor-pointer hover:bg-gray-100">
+                            {{ service.name }}
+                        </mat-checkbox>
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button
+                                class="mr-2 px-8"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                        >
+                            Back
+                        </button>
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                type="button"
+                                matStepperNext
+                        >
+                            Next
+                        </button>
+                    </div>
+                </mat-step>
+
+                <mat-step [formGroupName]="'step4'" [stepControl]="unitStepperForm.get('step4')" #unitStepperStep4>
+                    <ng-template matStepLabel>{{ t('features') }}</ng-template>
+
+                    <div *ngFor="let inclusion of inclusionsNames$ | async">
+                        <mat-checkbox
+                                [checked]="isInclusionSelected(inclusion.id)"
+                                (change)="onInclusionChange(inclusion.id, $event.checked)"
+                                class="flex items-center cursor-pointer hover:bg-gray-100">
+                            {{ inclusion.name }}
+                        </mat-checkbox>
+                        <!-- Afficher les champs qty et other si l'inclusion est sélectionnée -->
+                        <div *ngIf="isInclusionSelected(inclusion.id)">
+                            <div formArrayName="selectedInclusions">
+                                <div *ngFor="let inclusionControl of selectedInclusions.controls; let i = index">
+                                    <div [formGroupName]="i">
+                                        <mat-form-field class="gt-xs:pl-3 flex-auto">
+                                            <input *ngIf="inclusionControl.get('inclusionId').value === inclusion.id" matInput formControlName="qty" type="number" placeholder="Quantité">
+                                        </mat-form-field>
+                                        <mat-form-field class="ml-3 gt-xs:pl-3 flex-auto">
+                                            <input *ngIf="inclusionControl.get('inclusionId').value === inclusion.id" matInput formControlName="other" type="text" placeholder="Informations supplémentaires">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button
+                                class="mr-2 px-8"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                        >
+                            Back
+                        </button>
+                        <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                type="button"
+                                matStepperNext
+                                (click)="updateUnit()"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </mat-step>
+            </mat-horizontal-stepper>
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,611 @@
+<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+    <!-- Header -->
+    <div class="bg-card">
+        <div class="mx-auto flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
+            <div
+                class="my-8 flex min-w-0 flex-auto flex-col sm:my-12 sm:flex-row sm:items-center"
+            >
+                <!-- Avatar and name -->
+                <div class="flex flex-auto items-center min-w-0">
+                    <div class="flex-0 w-16 h-16 rounded-full overflow-hidden">
+                        <img *ngIf="user?.imageUrl"
+                             class="w-full h-full object-cover"
+                             [src]="user?.imageUrl">
+                        <mat-icon
+                            class="icon-size-24"
+                            *ngIf="!user?.imageUrl"
+                            [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
+                    </div>
+                    <div class="flex flex-col min-w-0 ml-4">
+                        <ng-container *transloco="let t">
+                            <div class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">{{t('welcome-back')}}, {{user?.firstname}} {{user?.lastname}}!</div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="-mt-px flex-auto border-t pt-4 sm:pt-6">
+        <div class="mx-auto w-full max-w-screen-xl">
+            <!-- Tabs -->
+            <mat-tab-group
+                class="sm:px-2"
+                mat-stretch-tabs="false"
+                [animationDuration]="'0'"
+            >
+                <!-- Home -->
+                <mat-tab label="Home">
+                    <ng-template matTabContent>
+                        <div
+                            class="grid w-full min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4" *ngIf="isAdmin"
+                        >
+                            <!-- Users -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Users')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-blue-500 sm:text-8xl"
+                                    >
+                                        {{totalUsers}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tenants -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t ('Tenants')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-red-500 sm:text-8xl"
+                                    >
+                                        {{totalTenant}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Issues -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Owners')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-amber-500 sm:text-8xl"
+                                    >
+                                        {{totalOwner}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Properties -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Properties')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-green-500 sm:text-8xl"
+                                    >
+                                        {{totalProperty}}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Units -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Units')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-green-500 sm:text-8xl"
+                                    >
+                                        {{totalUnit}}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Leases-->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Leases')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-amber-500 sm:text-8xl"
+                                    >
+                                        {{totalLease}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Requests -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Requests')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-red-500 sm:text-8xl"
+                                    >
+                                        {{totalRequest}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Reclamations -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Reclamations')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-blue-500 sm:text-8xl"
+                                    >
+                                        {{totalReclamation}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- todo le sub admin doit uniquement consulter ces  owners et ces tenants et non pas nbr totale des tenants -->
+                        <div
+                                class="grid w-full min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4" *ngIf="isSubAdmin"
+                        >
+                            <!-- Users -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Users')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-blue-500 sm:text-8xl"
+                                    >
+                                        {{totalUsers}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tenants -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t ('Tenants')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-red-500 sm:text-8xl"
+                                    >
+                                        {{totalTenant}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Issues -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Owners')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-amber-500 sm:text-8xl"
+                                    >
+                                        {{totalOwner}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Properties -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Properties')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-green-500 sm:text-8xl"
+                                    >
+                                        {{totalProperty}}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Units -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Units')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-green-500 sm:text-8xl"
+                                    >
+                                        {{totalUnit}}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Leases-->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Leases')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-amber-500 sm:text-8xl"
+                                    >
+                                        {{totalLease}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Requests -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Requests')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-red-500 sm:text-8xl"
+                                    >
+                                        {{totalRequest}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Reclamations -->
+                            <div
+                                    class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                            class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Reclamations')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                            class="text-7xl font-bold leading-none tracking-tight text-blue-500 sm:text-8xl"
+                                    >
+                                        {{totalReclamation}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- todo le owner doit uniquement consulter ces tenants et non pas nbr totale des tenants -->
+                        <div
+                            class="grid w-full min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4" *ngIf="isOwner"
+                        >
+                            <!-- Users -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Users')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-blue-500 sm:text-8xl"
+                                    >
+                                        {{totalUsers}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tenants -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t ('Tenants')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-red-500 sm:text-8xl"
+                                    >
+                                        {{totalTenant}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Owners -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Owners')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-amber-500 sm:text-8xl"
+                                    >
+                                        {{totalOwner}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Properties -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Properties')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-green-500 sm:text-8xl"
+                                    >
+                                        {{totalProperty}}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Units -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Units')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-green-500 sm:text-8xl"
+                                    >
+                                        {{totalUnit}}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Leases-->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Leases')}}
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-amber-500 sm:text-8xl"
+                                    >
+                                        {{totalLease}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Requests -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Requests')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-red-500 sm:text-8xl"
+                                    >
+                                        {{totalRequest}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Reclamations -->
+                            <div
+                                class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div
+                                        class="truncate text-lg font-medium leading-6 tracking-tight"
+                                    >
+                                        {{t('Reclamations')}}
+                                    </div>
+
+                                </div>
+                                <div class="mt-2 flex flex-col items-center">
+                                    <div
+                                        class="text-7xl font-bold leading-none tracking-tight text-blue-500 sm:text-8xl"
+                                    >
+                                        {{totalReclamation}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+                <!-- Users -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <span class="inline-flex items-center space-x-2">
+                            <span class="">{{t('Users')}}</span>
+                            <span
+                                class="rounded-full bg-primary-100 px-2 py-1 text-sm text-on-primary-100"
+                                >{{totalUsers}}</span
+                            >
+                        </span>
+                    </ng-template>
+                    <ng-template matTabContent>
+                        <div
+                            class="grid w-full min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                        >
+                            @for (member of users; track member) {
+                                <div
+                                    class="bg-card flex flex-auto flex-col items-center overflow-hidden rounded-2xl shadow"
+                                >
+                                    <!-- Avatar & Info -->
+                                    <div
+                                        class="flex w-full flex-auto flex-col p-8 text-center"
+                                    >
+                                        <div
+                                            class="mx-auto h-32 w-32 overflow-hidden rounded-full"
+                                        >
+                                            <mat-icon *ngIf="!member?.imageUrl" class="icon-size-24" svgIcon="heroicons_solid:user-circle"></mat-icon>
+
+                                            <img *ngIf="member?.imageUrl"
+                                                 class="w-full h-full object-cover"
+                                                 [src]="member?.imageUrl">
+                                        </div>
+                                        <div class="mt-6 font-medium">
+                                            {{member?.firstname}} {{member?.lastname}}
+                                        </div>
+                                        <div class="text-secondary">
+                                            <span  *ngIf="member.role === 'ADMIN'">   {{ t('Administrateur')}}</span>
+                                            <span  *ngIf="member.role === 'SUB_ADMIN'">   {{t ('Sous-administrateur')}}</span>
+                                            <span *ngIf="member.role === 'OWNER'">   {{ t('Propriétaire')}}</span>
+                                            <span *ngIf="member.role === 'TENANT'" >   {{t('Locataire') }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Email & Phone -->
+                                    <div
+                                        class="flex w-full items-center divide-x border-t"
+                                    >
+                                        <a
+                                            class="flex flex-auto items-center justify-center py-4 hover:bg-hover"
+                                            [href]="'mailto:' + member?.email"
+                                        >
+                                            <mat-icon
+                                                class="text-hint icon-size-5"
+                                                [svgIcon]="
+                                                    'heroicons_solid:envelope'
+                                                "
+                                            ></mat-icon>
+                                            <span class="ml-2">Email</span>
+                                        </a>
+                                        <a
+                                            class="flex flex-auto items-center justify-center py-4 hover:bg-hover"
+                                            [href]="'tel:' + member.phoneNumber"
+                                        >
+                                            <mat-icon
+                                                class="text-hint icon-size-5"
+                                                [svgIcon]="
+                                                    'heroicons_solid:phone'
+                                                "
+                                            ></mat-icon>
+                                            <span class="ml-2">{{t('Call')}}</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</div>

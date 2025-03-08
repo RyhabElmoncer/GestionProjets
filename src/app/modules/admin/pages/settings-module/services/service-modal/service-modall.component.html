@@ -1,0 +1,52 @@
+<div class="-m-6 flex flex-auto flex-col md:w-160 md:min-w-160" *transloco="let t">
+    @if (service$ | async; as service) {
+
+        <div class="m-4">
+            <!-- Title -->
+            <div>
+                <input
+                        class="w-full p-2 text-2xl"
+                        [placeholder]="t('Name')"
+                        [(ngModel)]="service.name"
+                />
+            </div>
+            <!-- Note -->
+            <div class="flex w-full px-2 py-5">
+                <textarea
+                        class="w-full"
+                        [placeholder]="t('Description')"
+                        [(ngModel)]="service.description"
+                        cdkTextareaAutosize
+                ></textarea>
+            </div>
+            <!-- Add Actions -->
+            @if (!service.id) {
+                <div class="mt-4 flex items-center justify-end">
+                    <!-- Save -->
+                    <button
+                            mat-flat-button
+                            [color]="'primary'"
+                            [disabled]="!service.name"
+                            (click)="createService(service)"
+                    >
+                        {{t('action.save')}}
+                    </button>
+                </div>
+            }
+            <!-- Edit Actions -->
+            @if (service.id) {
+                <div class="mt-4 flex items-center justify-end">
+                    <!-- Save -->
+                    <button
+                            mat-flat-button
+                            [color]="'primary'"
+                            [disabled]="!service.name"
+                            (click)="editService(service)"
+                    >
+                        {{t('action.save')}}
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
