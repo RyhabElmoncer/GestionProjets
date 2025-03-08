@@ -95,6 +95,7 @@ export class UserService {
     getUserCountByRole(role: string): Observable<{ role: string, userCount: number }> {
         return this.http.get<{ role: string, userCount: number }>(`${SERVER_API_URL}api/user/count-by-role?role=${role}`);
     }
+
     getUserByRole(role: string, page: number = 0, size: number = 20): Observable<HttpResponse<Page<User>>> {
         const params = new HttpParams()
             .set('role', role)
@@ -112,6 +113,12 @@ export class UserService {
             text: message,
         });
         return throwError(error);
+    }
+
+    getUserById(id: string): Observable<User> {
+        return this.http.get<User>(`${SERVER_API_URL}api/user/get-by-id?id=${id}`).pipe(
+            catchError(e => this.handleError(e, 'Fetching user by ID failed'))
+        );
     }
 
 }

@@ -11,16 +11,16 @@ export class Unit {
   descriptionEn:string;
   marketRent:string;
   unitType:string;
-  size: string;
+  size: number;
   typeOfSize:string;
-  defaultImage;
+  defaultImage :string;
   isHome:number
-  accessControl:boolean;
+  accessControl:string;
   rentalType:string;
   status:string;
   propertyId:string;
   serviceIds: string[];
-  images;
+  images: string;
   unitInclusions: UnitInclusion[]; // Add this line
 }
 export class UnitInclusion {

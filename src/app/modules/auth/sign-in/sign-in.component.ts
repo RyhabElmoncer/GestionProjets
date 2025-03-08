@@ -86,45 +86,40 @@ export class AuthSignInComponent implements OnInit {
      * Sign in
      */
     signIn(): void {
-
         if (this.signInForm.invalid) {
             return;
         }
         this.signInForm.disable();
         this.showAlert = false;
+    
         const { email, password, rememberMe } = this.signInForm.value;
-
+    
         this._authService.authenticate(email, password).subscribe(
             (response) => {
                 console.log('Authentication successful:', response);
-
-                if (rememberMe) {
-                    localStorage.setItem('rememberedEmail', email);
-                } else {
-                    localStorage.removeItem('rememberedEmail');
+    
+                // Stocker le token JWT dans le localStorage
+                if (response.token) {
+                    localStorage.setItem('accessToken', response.token);
                 }
-                const token = this._authService.accessToken;
-
-                if (token) {
-                    console.log('User UUID:', this.authService.getClaim(token, 'uuid'));
-                    this.getCurrentUser(this.authService.getClaim(token, 'uuid'));
-                }
+    
+                // Rediriger l'utilisateur
                 const redirectURL =
-                    this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/dashboard';
+                    this._activatedRoute.snapshot.queryParamMap.get( '/dashboard');
                 this._router.navigateByUrl(redirectURL);
             },
             (error) => {
                 this.signInForm.enable();
-
+    
                 if (this.signInNgForm) {
                     this.signInNgForm.resetForm();
                 }
+    
                 this.alert = {
                     type: 'error',
                     message: error.error?.message || 'Invalid email or password',
                 };
-
-                // Afficher l'alerte
+    
                 this.showAlert = true;
             }
         );

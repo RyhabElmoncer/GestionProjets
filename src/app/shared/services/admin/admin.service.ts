@@ -1,89 +1,70 @@
-import { HttpClient, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-    InventoryPagination
-} from 'app/modules/admin/pages/users-module/admin/list-admin/admin.types';
-import {
-
-    BehaviorSubject,
-    Observable,
-    map,
-    tap,
-} from 'rxjs';
-import {SERVER_API_URL} from "../../../../app.constants";
-import {User} from "../authauthentication/user.model";
-import {Page} from "../../../modules/admin/pages/users-module/admin/list-admin/page";
+import { BehaviorSubject, Observable, map, tap,throwError,catchError } from 'rxjs';
+import { SERVER_API_URL } from '../../../../app.constants';
+import { User } from '../authauthentication/user.model';
+import { Page } from '../../../modules/admin/pages/users-module/admin/list-admin/page';
+import { InventoryPagination } from 'app/modules/admin/pages/users-module/admin/list-admin/admin.types';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-    // Private
-    private _pagination: BehaviorSubject<InventoryPagination | null> =
-        new BehaviorSubject(null);
-    public _users: BehaviorSubject<User[] | null> =
-        new BehaviorSubject(null);
-    /**
-     * Constructor
-     */
+    private _pagination: BehaviorSubject<InventoryPagination | null> = new BehaviorSubject(null);
+    private _users: BehaviorSubject<User[] | null> = new BehaviorSubject(null);
+
     constructor(private _httpClient: HttpClient) {}
 
-    /**
-     * Getter for pagination
-     */
     get pagination$(): Observable<InventoryPagination> {
         return this._pagination.asObservable();
     }
-    get users$ (): Observable<User[]> {
+
+    get users$(): Observable<User[]> {
         return this._users.asObservable();
     }
-    getAdmins$(role: string, page: number = 0, size: number = 20): void {
-        const params = new HttpParams()
-            .set('role', role)
-            .set('page', page.toString())
-            .set('size', size.toString());
-
-        this._httpClient.get<Page<User>>(`${SERVER_API_URL}api/user/get-by-role-pageable`, { params })
-            .pipe(
-                map(response => ({
-                    users: response.content,
-                    pagination: {
-                        length: response.totalElements,
-                        size: response.size,
-                        page: response.number,
-                        lastPage: response.totalPages - 1,
-                        startIndex: response.number * response.size,
-                        endIndex: Math.min((response.number + 1) * response.size, response.totalElements) - 1
-                    }
-                }))
-            )
-            .subscribe(data => {
-                this._users.next(data.users);
-                this._pagination.next(data.pagination);
-            });
-    }
-    activateOrDeactivateUser(request: { userId: string; enabled: boolean }): Observable<any> {
-        return this._httpClient.put(
-            `${SERVER_API_URL}api/user/activate`,
-            request,
-            { responseType: 'text' } // Ignorer le parsing JSON
-        );
-    }
-    deleteUser(id: string): Observable<any> {
-        return this._httpClient.delete(`${SERVER_API_URL}api/user/delete`, {
-            params: { id },
-            responseType: 'text' // Dit à Angular de ne pas attendre un JSON
-        }).pipe(
-            tap(() => {
-                this._users.next(this._users.getValue()?.filter(u => u.id !== id) ?? []);
+getAllUsers(): Observable<User[]> {
+        return this._httpClient.get<User[]>(`${SERVER_API_URL}user/getAll`).pipe(
+            tap((users) => {
+                this._users.next(users); //
+            }),
+            catchError((error) => {
+                console.error('Error fetching users', error);
+                return throwError(() => new Error('Error fetching users'));
             })
         );
     }
-    createUser(userData: any): Observable<any> {
-        return this._httpClient.post(`${SERVER_API_URL}api/user/create-user`, userData);
-    }
+
+   deleteUser(id: string): Observable<any> {
+           return this._httpClient.delete(`${SERVER_API_URL}user/delete`, {
+               params: new HttpParams().set('id', id),
+               responseType: 'text'
+           }).pipe(
+               tap(() => {
+                   const currentUsers = this._users.getValue() || [];
+                   this._users.next(currentUsers.filter(user => user.id !== id));
+               }),
+               catchError((error) => {
+                   console.error('Error deleting user', error);
+                   return throwError(() => new Error('Error deleting user'));
+               })
+           );
+       }
+
+ createUser(userData: any): Observable<any> {
+     const token = localStorage.getItem('accessToken'); // Récupérer le jeton
+     if (!token) {
+         console.error('No access token found');
+         return throwError(() => new Error('No access token found'));
+     }
+
+     const headers = new HttpHeaders({
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}` // Ajouter le jeton dans les en-têtes
+     });
+
+     return this._httpClient.post(`${SERVER_API_URL}user/addUser`, userData, { headers });
+ }
     editUser(userData: any): Observable<any> {
-        return this._httpClient.put(`${SERVER_API_URL}api/user/update`, userData, {
-            responseType: 'text'  // Si tu attends une réponse de type texte, utilise 'text'
+        return this._httpClient.put(`${SERVER_API_URL}/user/update`, userData, {
+            responseType: 'text'
         });
     }
-
 }

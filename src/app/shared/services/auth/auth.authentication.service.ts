@@ -6,8 +6,6 @@ import { SERVER_API_URL } from '../../../../app.constants';
 import { User } from '../../../core/user/user.types';
 
 
-
-
 @Injectable({providedIn: 'root'})
 
 export class AuthauthenticationService {
@@ -45,11 +43,7 @@ export class AuthauthenticationService {
                         sessionStorage.setItem('authenticationToken', user.id_token);
                     }
 
-                    // setInterval(() => {
-                    //     // window.location.href = 'http://192.168.1.21:4300/dashboard?token' + user.id_token  ;
-                    //     window.location.href = 'http://192.168.1.21:4300/pages/coming-soon/' + user.id_token;
-                    // }, 2000);
-
+       
                 }
                 return user;
             }));

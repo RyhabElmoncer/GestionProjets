@@ -2,17 +2,10 @@
 import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
-    {
-        id   : 'dashboards.analytics',
-        title: 'Dashboard',
-        type : 'basic',
-        icon : 'heroicons_outline:chart-pie',
-        link : '/dashboard'
 
-    },
     {
         id   : 'pages.users',
-        title: 'Users',
+        title: 'Users Management',
         subtitle: '',
         type: 'collapsable',
         icon : 'heroicons_outline:user-group',
@@ -29,18 +22,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type: 'basic',
                 link : '/pages/sub-admins',
             },
-            {
-                id: 'pages.owners',
-                title: 'Owners',
-                type: 'basic',
-                link: '/pages/owners'
-            },
-            {
-                id: 'pages.tenants',
-                title: 'Tenants',
-                type: 'basic',
-                link: '/pages/tenants'
-            }
+
         ]
     },
     {
@@ -75,13 +57,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Requests',
                 type: 'basic',
                 link: '/pages/request'
-            },
-            {
-                id: 'pages.unitTypes',
-                title: 'Unit type',
-                type: 'basic',
-                link: '/pages/unit-types'
-            },
+            }
         ]
     },
     {
@@ -231,6 +207,12 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Services',
                 type: 'basic',
                 link: '/pages/services'
+            },
+            {
+                id: 'pages.unitTypes',
+                title: 'Unit type',
+                type: 'basic',
+                link: '/pages/unit-types'
             },
             {
                 id: 'pages.payment',

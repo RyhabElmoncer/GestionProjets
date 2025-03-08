@@ -50,8 +50,6 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 })
 export class ServiceModalComponent implements OnInit, OnDestroy {
     service$: Observable<ServiceInclusion>;
-
-    noteChanged: Subject<ServiceInclusion> = new Subject<ServiceInclusion>();
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**

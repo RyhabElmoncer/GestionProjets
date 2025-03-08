@@ -13,6 +13,8 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -57,24 +59,7 @@ import { RouterLink , Router} from '@angular/router';
   selector: 'app-list-sub-admin',
   templateUrl: './list-sub-admin.component.html',
   styles: [
-    /* language=SCSS */
-    `
-      .inventory-grid {
-        grid-template-columns: 48px auto 40px;
 
-        @screen sm {
-          grid-template-columns: 48px auto 112px 72px;
-        }
-
-        @screen md {
-          grid-template-columns: 48px 112px auto 112px 72px;
-        }
-
-        @screen lg {
-          grid-template-columns: 180px auto 150px 100px 150px 300px ;
-        }
-      }
-    `,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -123,7 +108,7 @@ export class ListSubAdminComponent     implements OnInit , OnDestroy
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
   @ViewChild(MatSort) private _sort: MatSort;
 
-  users$: Observable<User[]>;
+users$: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
   pagination: InventoryPagination;
   private _unsubscribeAll = new Subject<void>();
   isLoading: boolean = false;
@@ -148,25 +133,8 @@ export class ListSubAdminComponent     implements OnInit , OnDestroy
       private router: Router
   ) {}
   ngOnInit(): void {
-    // Get the pagination
-    this._adminService.pagination$
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((pagination: InventoryPagination) => {
-          this.pagination = pagination;
-
-          // Met à jour MatPaginator
-          if (this._paginator) {
-            this._paginator.pageIndex = pagination.page;
-            this._paginator.pageSize = pagination.size;
-          }
-
-          this._changeDetectorRef.markForCheck();
-        });
-
-    // Charge les admins pour la première fois
-    this._adminService.getAdmins$('SUB_ADMIN', 0, 20);
-    this.users$ = this._adminService.users$;
-
+this.openUserList();
+this.getUsers();
     // Build the config form
     this.configForm = this._formBuilder.group({
       title: 'Remove contact',
@@ -191,9 +159,6 @@ export class ListSubAdminComponent     implements OnInit , OnDestroy
       dismissible: true,
     });
   }
-  onPageChange(event: PageEvent): void {
-    this._adminService.getAdmins$('SUB_ADMIN', event.pageIndex, event.pageSize);
-  }
 
   /**
    * Nettoyage des subscriptions pour éviter les fuites mémoire
@@ -205,65 +170,82 @@ export class ListSubAdminComponent     implements OnInit , OnDestroy
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
-  changeEnabled(user: User): void {
-    const request = { userId: user.id, enabled: !user.enabled };
+  filterUsers(search: string): void {
+      if (!search) {
+        this.openUserList();
+        return;
+      }
+      this.users = this.users.filter(user =>
+        user.firstname.toLowerCase().includes(search.toLowerCase()) ||
+        user.lastname.toLowerCase().includes(search.toLowerCase()) ||
+        user.email.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+ openUserList(): void {
+     console.log('🔄 Envoi de la requête au backend...');
+     this.isLoading = true;
+     this._adminService.getAllUsers().pipe(take(1)).subscribe(
+         (users) => {
+             console.log('✅ Utilisateurs récupérés :', users);
+             this.users = users;
+             this.isLoading = false;
+             this._changeDetectorRef.markForCheck();
+         },
+         (error) => {
+             console.error('❌ Erreur lors de la récupération des utilisateurs', error);
+             this.isLoading = false;
+         }
+     );
+ }
+   deleteUser(user: User): void {
+     this._adminService.deleteUser(user.id).subscribe(
+         () => console.log(`Utilisateur ${user.firstname} supprimé avec succès.`),
+         (error) => console.error('Erreur lors de la suppression :', error)
+     );
+   }
+    openConfirmationDialog(user: User): void {
+       const dialogRef = this._fuseConfirmationService.open({
+         title: `Supprimer ${user.firstname} ${user.lastname} ?`,
+         message: `Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.`,
+         icon: {
+           show: true,
+           name: 'heroicons_outline:exclamation-triangle',
+           color: 'warn',
+         },
+         actions: {
+           confirm: {
+             show: true,
+             label: 'Supprimer',
+             color: 'warn',
+           },
+           cancel: {
+             show: true,
+             label: 'Annuler',
+           },
+         },
+         dismissible: true,
+       });
 
-    this._adminService.activateOrDeactivateUser(request).subscribe(
-        response => {
-          console.log('Réponse de l\'API :', response);
-
-          // Mise à jour de la liste des utilisateurs dans le BehaviorSubject
-          this._adminService.users$.pipe(take(1)).subscribe(users => {
-            if (users) {
-              const updatedUsers = users.map(u => u.id === user.id ? { ...u, enabled: !u.enabled } : u);
-              this._adminService._users.next(updatedUsers); // Met à jour le BehaviorSubject
-            }
-          });
+       // Après la fermeture du dialogue
+       dialogRef.afterClosed().subscribe((result) => {
+         if (result === 'confirmed') {
+           this.deleteUser(user);
+         }
+       });
+     }
+ navigateToEdit(user: User): void {
+     console.log('Utilisateur envoyé :', user); // Debugging
+     this.router.navigate(['edit-sub-admin'], { state: { user } });
+   }
+getUsers(): void {
+    this._adminService.getAllUsers().subscribe(
+        (users) => {
+            this.users$.next(users);
         },
-        error => {
-          console.error('Erreur lors de la mise à jour de l\'état : ', error);
+        (error) => {
+            console.error('Erreur lors du chargement des utilisateurs', error);
         }
     );
-  }
+}
 
-  deleteUser(user: User): void {
-    this._adminService.deleteUser(user.id).subscribe(
-        () => console.log(`Utilisateur ${user.firstname} supprimé avec succès.`),
-        (error) => console.error('Erreur lors de la suppression :', error)
-    );
-  }
-  openConfirmationDialog(user: User): void {
-    const dialogRef = this._fuseConfirmationService.open({
-      title: `Supprimer ${user.firstname} ${user.lastname} ?`,
-      message: `Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.`,
-      icon: {
-        show: true,
-        name: 'heroicons_outline:exclamation-triangle',
-        color: 'warn',
-      },
-      actions: {
-        confirm: {
-          show: true,
-          label: 'Supprimer',
-          color: 'warn',
-        },
-        cancel: {
-          show: true,
-          label: 'Annuler',
-        },
-      },
-      dismissible: true,
-    });
-
-    // Après la fermeture du dialogue
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result === 'confirmed') {
-        this.deleteUser(user);
-      }
-    });
-  }
-  navigateToEdit(user: User): void {
-    console.log('Utilisateur envoyé :', user); // Debugging
-    this.router.navigate(['/pages/sub-admins/edit-sub-admin'], { state: { user } });
-  }
 }

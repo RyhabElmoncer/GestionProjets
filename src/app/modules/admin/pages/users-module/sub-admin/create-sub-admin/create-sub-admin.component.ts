@@ -67,168 +67,48 @@ export class CreateSubAdminComponent  implements OnInit {
   }
 
   private createAdminForm(): void {
-    this.createForm = this.formBuilder.group({
-      firstname: [null, [Validators.required, Validators.minLength(3)]],
-      lastname: [null, [Validators.required, Validators.minLength(3)]],
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required, Validators.minLength(3)]],
-      phoneNumber:  ['', [Validators.required, Validators.pattern(/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/)]],
-      lanKey: [null],
-      street: [null, [Validators.required, Validators.minLength(3)]],
-      city: [null, [Validators.required, Validators.minLength(2)]],
-      state: [null, [Validators.required, Validators.minLength(2)]],
-      country: [null, [Validators.required, Validators.minLength(2)]],
-      zip: [null, [Validators.required, Validators.minLength(2)]],
-
-    });
-  }
+      this.createForm = this.formBuilder.group({
+        firstname: ['', Validators.required],
+        lastname: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        role: ['USER']  // Définir le rôle USER par défaut
+      });
+    }
   longitude: String;
   altitude: String;
   addressPro;
+onSubmit(): void {
+    console.log("Form Values:", this.createForm.value); // Vérification des données
 
-  handleAddressChange(address: any) {
-    this.addressPro = address.formatted_address
-    let street = '';
-    let streetNumber = '';
-    const  address_components = address.address_components;
-    for (let j = 0; j < address_components.length; j++) {
-      if(address_components[j].types[0]=== "country") {
-        this.createForm.patchValue({
-          country:  address_components[j].long_name,
-        });
-      }
-
-      if(address_components[j].types[0]=== "administrative_area_level_1") {
-        this.createForm.patchValue({
-          state:  address_components[j].long_name,
-        });
-      }
-
-      if(address_components[j].types[0]=== "locality") {
-        this.createForm.patchValue({
-          city:  address_components[j].long_name,
-        });
-      }
-      if (address_components[j].types[0] === "route") {
-        street = address_components[j].long_name; // Ex: "Sands Ave"
-      }
-
-      if (address_components[j].types[0] === "street_number") {
-        streetNumber = address_components[j].long_name; // Ex: "255"
-      }
-
-      if(address_components[j]?.types[0]=== "postal_code" || address_components[j]?.types[1]=== "postal_code") {
-        this.createForm.patchValue({
-          zip:  address_components[j].long_name,
-        });
-      }
-
-    }
-    this.createForm.patchValue({
-      street: streetNumber ? `${streetNumber} ${street}` : street
-    });
-
-    if( address?.geometry?.location){
-      this.longitude = address?.geometry?.location?.lat();
-      this.altitude =  address?.geometry?.location?.lng() ;
-    }
-  }
-  onSubmit(): void {
     if (this.createForm.invalid) {
-      return;
+        console.log("Formulaire invalide !");
+        return;
     }
 
     const formValues = this.createForm.value;
-
     const userData = {
-      user: {
         firstname: formValues.firstname,
         lastname: formValues.lastname,
         email: formValues.email,
         password: formValues.password,
-        phoneNumber: formValues.phoneNumber,
-        lanKey: formValues.lanKey,
-        role:"SUB_ADMIN",
-        privilegeStrings: this.generatePrivileges()
-      },
-      address: {
-        adresse: formValues.adresse,
-        street: formValues.street,
-        city: formValues.city,
-        state: formValues.state,
-        country: formValues.country,
-        zip: formValues.zip,
-        longitude: this.longitude,
-        altitude: this.altitude
-      }
+        role: "USER"
     };
 
-    this.adminService.createUser(userData).subscribe({
-      next: (response) => {
-        console.log('Utilisateur créé avec succès');
-        this._fuseConfirmationService.open({
-          title: this.translate.translate(`Succès`),
-          message: this.translate.translate(`Utilisateur créé avec succès`),
-          "icon": {
-            "show": true,
-            "name": "heroicons_outline:check-circle",
-            "color": "success"
-          },
-          "actions": {
-            "confirm": {
-              "show": false,
-              "label": "Remove",
-              "color": "primary"
-            },
-            "cancel": {
-              "show": true,
-              "label": "ok"
-            }
-          },
-          "dismissible": true
-        });
-        this.createForm.reset();  // Réinitialiser le formulaire
-        this.createForm.markAsPristine();
-        this.createForm.markAsUntouched();
-        this.createForm.updateValueAndValidity();
-        this.addressPro = "";
-        this.longitude=""
-        this.altitude=""
-        this.modules.forEach(module => {
-          module.isActive = false;
-          module.subModules.forEach(sub => {
-            sub.privileges.forEach(priv => priv.isActive = false);
-          });
-        });
 
-        this.router.navigate(['/pages/sub-admins']);
-      },
-      error: (error) => {
-        console.error('Erreur lors de la création de l’utilisateur', error);
-        this._fuseConfirmationService.open({
-          title: this.translate.translate(`Erreur`),
-          message: this.translate.translate(`Erreur lors de la création de l’utilisateur`),
-          "icon": {
-            "show": true,
-            "name": "heroicons_outline:exclamation-triangle",
-            "color": "warn"
-          },
-          "actions": {
-            "confirm": {
-              "show": false,
-              "label": "Remove",
-              "color": "warn"
-            },
-            "cancel": {
-              "show": true,
-              "label": "ok"
-            }
-          },
-          "dismissible": true
-        });
-      }
+    console.log("Données envoyées:", userData); // Vérification avant envoi
+
+    this.adminService.createUser(userData).subscribe({
+        next: (response) => {
+            console.log('Utilisateur créé avec succès', response);
+            this.createForm.reset();
+            this.router.navigate(['/pages/user']);
+        },
+        error: (error) => {
+            console.error('Erreur lors de la création de l’utilisateur', error);
+        }
     });
-  }
+}
 
 
   protected readonly Number = Number;
@@ -242,33 +122,9 @@ export class CreateSubAdminComponent  implements OnInit {
     });
   }
 
-  // Active/Désactive un privilège spécifique d’un sous-module
-  togglePrivilege(subModule: any, privilege: any) {
-    privilege.isActive = !privilege.isActive;
-  }
-  generatePrivileges() {
-    let privilegeStrings = [];
 
-    // Parcourir les modules
-    this.modules.forEach(module => {
-      if (module.isActive) {
-        // Parcourir les sous-modules si le module est activé
-        module.subModules.forEach(subModule => {
-          // Parcourir les privilèges de chaque sous-module
-          subModule.privileges.forEach(privilege => {
-            if (privilege.isActive) { // Si le privilège est activé
-              privilegeStrings.push(`${module.name.toUpperCase()}:${subModule.name.toUpperCase()}:${privilege.name.toUpperCase()}`);
-              console.log("privilegeStrings", privilegeStrings);
-            }
-          });
-        });
-      }
-    });
-
-    return privilegeStrings;
-  }
 
   onCancel(): void {
-    this.router.navigate(['/pages/sub-admins']);
+    this.router.navigate(['/pages/user']);
   }
 }

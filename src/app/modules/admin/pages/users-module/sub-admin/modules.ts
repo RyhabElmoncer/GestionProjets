@@ -13,33 +13,9 @@ export const modules = [
                     { name: 'delete', isActive: false }
                 ]
             },
-            // {
-            //     name: 'Sub_Admins',
-            //     privileges: [
-            //         { name: 'read', isActive: false },
-            //         { name: 'write', isActive: false },
-            //         { name: 'update', isActive: false },
-            //         { name: 'delete', isActive: false }
-            //     ]
-            // },
-            {
-                name: 'Tenants',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            // {
-            //     name: 'Admins',
-            //     privileges: [
-            //         { name: 'read', isActive: false },
-            //         { name: 'write', isActive: false },
-            //         { name: 'update', isActive: false },
-            //         { name: 'delete', isActive: false }
-            //     ]
-            // }
+
+
+
         ]
     },
     {
@@ -55,43 +31,8 @@ export const modules = [
                     { name: 'delete', isActive: false }
                 ]
             },
-            {
-                name: 'Leases',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Units',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Buildings',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                title:'Unit Types',
-                name: 'Unit_Types',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            }
+
+
         ]
     },
     {
@@ -125,69 +66,11 @@ export const modules = [
                     { name: 'delete', isActive: false }
                 ]
             },
-            {
-                name: 'Suppliers',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Billings',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Open_AR',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Expenses',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Encasements',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Vacants',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            },
-            {
-                name: 'Open_AP',
-                privileges: [
-                    { name: 'read', isActive: false },
-                    { name: 'write', isActive: false },
-                    { name: 'update', isActive: false },
-                    { name: 'delete', isActive: false }
-                ]
-            }
+
+
+
+
+        
         ]
     },
     {
